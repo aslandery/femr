@@ -1,0 +1,41 @@
+name: Build Windows Wheel for femr
+
+on:
+  workflow_dispatch:  # 手动运行
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.10.16
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10.16'  # 明确指定补丁版本
+
+    - name: Install Bazel via Chocolatey
+      shell: powershell
+      run: |
+        choco install bazel -y
+        $env:PATH += ";C:\Program Files\Bazel"  # 手动加到 PATH，确保 bazel 命令可用
+
+    - name: Verify Bazel version
+      run: bazel --version
+
+    - name: Install Python build tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install wheel setuptools
+
+    - name: Build femr wheel
+      run: |
+        pip wheel . -w dist
+
+    - name: Upload wheel artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: femr-windows-wheel
+        path: dist/*.whl
