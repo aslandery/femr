@@ -43,7 +43,7 @@ jobs:
 
     - name: Build femr wheel
       run: |
-        pip wheel . -w dist
+        pip wheel . -w dist --config-settings=--copt=/std:c++17
 
     - name: Upload wheel artifact
       uses: actions/upload-artifact@v4
