@@ -288,12 +288,11 @@ http_archive(
     sha256 = "4b2136f98bdd1f5857f1c3dea9ac2018effe65286cf251534b6ae20cc45e1847",
     strip_prefix = "boost_1_80_0",
     build_file_content = """
-package(default_visibility = ["//visibility:public"])
-
 cc_library(
     name = "headers",
-    hdrs = glob(["boost/**"]),
+    hdrs = glob(["boost/**/*.hpp", "boost/**/*.h"]),
     includes = ["."],
+    visibility = ["//visibility:public"],
 )
 """,
 )
