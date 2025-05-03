@@ -1,7 +1,7 @@
 name: Build Windows Wheel for femr
 
 on:
-  workflow_dispatch:  # 手动运行
+  workflow_dispatch:
 
 jobs:
   build:
@@ -11,30 +11,29 @@ jobs:
     - name: Checkout source
       uses: actions/checkout@v3
 
-    - name: Patch dummy rules_cuda for CI
-      shell: bash  # ✅ 使用 bash，因为 echo 是 bash 命令
-      run: |
-        echo 'local_repository(name = "rules_cuda", path = "C:/dummy")' >> WORKSPACE
-        mkdir -p /c/dummy
-
-    - name: Set up Python 3.10.11
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10.11'
 
-    - name: Install Bazel via Chocolatey
-      shell: powershell
+    - name: Install Bazel
+      uses: philwo/setup-bazel@v4  # 更稳定的方式安装 Bazel
+      with:
+        bazel-version: 6.5.0  # 或者你实际需要的版本
+
+    - name: Add dummy rules_cuda to WORKSPACE
+      shell: bash
       run: |
-        choco install bazel -y
-        $env:Path += ";C:\Program Files\Bazel"
+        echo 'local_repository(name = "rules_cuda", path = "C:/dummy")' >> WORKSPACE
+        mkdir -p /c/dummy
 
-    - name: Verify Bazel version
-      run: bazel --version
+    - name: Setup MSVC environment
+      uses: ilammy/msvc-dev-cmd@v1  # ✅ 正确配置 MSVC 环境
 
-    - name: Install Python build tools
+    - name: Upgrade pip and install build tools
       run: |
         python -m pip install --upgrade pip
-        pip install wheel setuptools
+        pip install setuptools wheel
 
     - name: Build femr wheel
       run: |
