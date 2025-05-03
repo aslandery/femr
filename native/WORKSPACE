@@ -271,40 +271,16 @@ http_archive(
     build_file_content = zstd_content,
 )
 
-_RULES_BOOST_COMMIT = "ce6bd1a54c9527ffee7d0a87e97a2bdd50162ac2"
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "com_github_nelhage_rules_boost",
-    strip_prefix = "rules_boost-%s" % _RULES_BOOST_COMMIT,
-    sha256 = "781c5413ce5d5ae8e0f90e524dc712e0ccc329bf4d5dc5850d883e64db8eff9b",
-    urls = [
-        "https://github.com/nelhage/rules_boost/archive/%s.tar.gz" % _RULES_BOOST_COMMIT,
-    ],
+    url = "https://github.com/nelhage/rules_boost/archive/master.zip",
+    strip_prefix = "rules_boost-master",
 )
 
-http_archive(
-    name = "boost",
-    urls = ["https://downloads.sourceforge.net/project/boost/boost/1.80.0/boost_1_80_0.tar.gz"],
-    sha256 = "...",
-    strip_prefix = "boost_1_80_0",
-    build_file_content = """
-cc_library(
-    name = "headers",
-    hdrs = glob(["boost/**/*.hpp", "boost/**/*.h"]),
-    includes = ["."],
-    visibility = ["//visibility:public"],
-)
-
-cc_library(
-    name = "filesystem",
-    hdrs = glob(["boost/filesystem/**/*.hpp", "boost/filesystem/**/*.h"]),
-    includes = ["."],
-    deps = [":headers"],
-    visibility = ["//visibility:public"],
-)
-""",
-)
-
+load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
+boost_deps()
 
 http_archive(
     name = "com_github_storypku_bazel_iwyu",
