@@ -12,16 +12,21 @@ jobs:
     - name: Checkout source
       uses: actions/checkout@v3
 
+    - name: Patch dummy rules_cuda for CI
+      run: |
+        echo local_repository\(name = \"rules_cuda\", path = \"C:/dummy\"\) >> WORKSPACE
+        mkdir C:/dummy  # 创建一个假的空目录，防止 Bazel 报错
+
     - name: Set up Python 3.10.11
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10.11'  # 明确指定补丁版本
+        python-version: '3.10.11'
 
     - name: Install Bazel via Chocolatey
       shell: powershell
       run: |
         choco install bazel -y
-        $env:PATH += ";C:\Program Files\Bazel"  # 手动加到 PATH，确保 bazel 命令可用
+        $env:PATH += ";C:\Program Files\Bazel"
 
     - name: Verify Bazel version
       run: bazel --version
