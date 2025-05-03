@@ -285,7 +285,7 @@ http_archive(
 http_archive(
     name = "boost",
     urls = ["https://downloads.sourceforge.net/project/boost/boost/1.80.0/boost_1_80_0.tar.gz"],
-    sha256 = "4b2136f98bdd1f5857f1c3dea9ac2018effe65286cf251534b6ae20cc45e1847",
+    sha256 = "...",
     strip_prefix = "boost_1_80_0",
     build_file_content = """
 cc_library(
@@ -294,8 +294,17 @@ cc_library(
     includes = ["."],
     visibility = ["//visibility:public"],
 )
+
+cc_library(
+    name = "filesystem",
+    hdrs = glob(["boost/filesystem/**/*.hpp", "boost/filesystem/**/*.h"]),
+    includes = ["."],
+    deps = [":headers"],
+    visibility = ["//visibility:public"],
+)
 """,
 )
+
 
 http_archive(
     name = "com_github_storypku_bazel_iwyu",
