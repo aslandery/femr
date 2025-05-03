@@ -286,6 +286,13 @@ load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 boost_deps()
 
 http_archive(
+    name = "boost",
+    urls = ["https://downloads.sourceforge.net/project/boost/boost/1.80.0/boost_1_80_0.tar.gz"],
+    sha256 = "4b2136f98bdd1f5857f1c3dea9ac2018effe65286cf251534b6ae20cc45e1847",
+    strip_prefix = "boost_1_80_0",
+)
+
+http_archive(
     name = "com_github_storypku_bazel_iwyu",
     strip_prefix = "bazel_iwyu-0.0.5",
     sha256 = "b4596e4f11e61c1ead77065dca8755fccff51e98a903b79ff61562c93ae7138d",
