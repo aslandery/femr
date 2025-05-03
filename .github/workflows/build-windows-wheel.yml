@@ -1,7 +1,7 @@
 name: Build Windows Wheel for femr
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # 手动触发
 
 jobs:
   build:
@@ -20,11 +20,20 @@ jobs:
         mkdir -p C:/dummy
         echo 'filegroup(name = "archs", srcs = [])' > C:/dummy/BUILD
 
-    - name: Patch Boost URL to SourceForge
+    - name: Patch Boost mirror to SourceForge
       shell: bash
       run: |
-        sed -i 's|https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz|https://downloads.sourceforge.net/project/boost/boost/1.80.0/boost_1_80_0.tar.gz|' native/WORKSPACE
-        sed -i 's|sha256 = ".*"|sha256 = "4b2136f98bdd1f5857f1c3dea9ac2018effe65286cf251534b6ae20cc45e1847"|' native/WORKSPACE
+        if grep -q "boost_1_80_0.tar.gz" native/WORKSPACE; then
+          sed -i 's|https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz|https://downloads.sourceforge.net/project/boost/boost/1.80.0/boost_1_80_0.tar.gz|' native/WORKSPACE
+        else
+          echo "Boost source URL not found, skipping patch."
+        fi
+
+    - name: Patch pybind11_bazel URL and checksum
+      shell: bash
+      run: |
+        sed -i 's|https://github.com/Lalaland/pybind11_bazel/archive/5a8209f6ddcc848272e27a36a5fc2b79e7438374.tar.gz|https://github.com/pybind/pybind11_bazel/archive/5a8209f6ddcc848272e27a36a5fc2b79e7438374.tar.gz|' native/WORKSPACE
+        sed -i 's|sha256 = ".*"|sha256 = "cc9bd704ec128049f6b0c7a64313a690a3f53dac2f040e9d00d87cf33d45d9c1"|' native/WORKSPACE
 
     - name: Set up Python 3.10.11
       uses: actions/setup-python@v4
