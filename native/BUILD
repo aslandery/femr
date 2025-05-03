@@ -248,6 +248,16 @@ cc_library(
     deps=[
         "@com_google_absl//absl/container:flat_hash_map",
     ],
+    copts = select({
+        ":windows": [
+            "/std:c++17",  # MSVC equivalent for C++17
+            "/arch:AVX",   # MSVC equivalent for AVX instructions
+        ],
+        "//conditions:default": [
+            "-std=c++17",  # GCC/Clang flag for C++17
+            "-mavx",       # GCC/Clang flag for AVX instructions
+        ],
+    }),
 )
 
 
