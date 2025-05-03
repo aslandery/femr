@@ -1,17 +1,15 @@
 name: Build Windows Wheel for femr
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # 手动触发
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout create-from-v16 branch
+    - name: Checkout source
       uses: actions/checkout@v3
-      with:
-        ref: create-from-v16
 
     - name: Patch dummy rules_cuda for CI
       shell: bash
@@ -20,17 +18,10 @@ jobs:
         mkdir -p C:/dummy
         echo 'filegroup(name = "archs", srcs = [])' > C:/dummy/BUILD
 
-    - name: Patch Boost URL to SourceForge
+    - name: Force replace Boost URL to SourceForge
       shell: bash
       run: |
-        sed -i 's|https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz|https://downloads.sourceforge.net/project/boost/boost/1.80.0/boost_1_80_0.tar.gz|' native/WORKSPACE || echo "Boost URL not found"
-
-    - name: Patch rules_foreign_cc for correct tar.gz and prefix
-      shell: bash
-      run: |
-        sed -i 's|https://github.com/bazelbuild/rules_foreign_cc/archive/refs/tags/0.9.0.tar.gz|https://github.com/bazelbuild/rules_foreign_cc/archive/0.9.0.tar.gz|' native/WORKSPACE
-        sed -i 's|strip_prefix = "rules_foreign_cc-0.9.0"|strip_prefix = "rules_foreign_cc-0.9.0"|' native/WORKSPACE
-        sed -i 's|sha256 = "[a-f0-9]*"|sha256 = "e5f6cd6e3d64658d3f003fc3ecb2f62b39b2ab3c419fe8d5b17c3f8e05aa32e2"|' native/WORKSPACE
+        sed -i 's|https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz|https://downloads.sourceforge.net/project/boost/boost/1.80.0/boost_1_80_0.tar.gz|' native/WORKSPACE
 
     - name: Set up Python 3.10.11
       uses: actions/setup-python@v4
@@ -41,6 +32,9 @@ jobs:
       uses: jwlawson/actions-setup-bazel@v2
       with:
         bazel-version: '6.5.0'
+
+    - name: Verify Bazel version
+      run: bazel --version
 
     - name: Install Python build tools
       run: |
